@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const STEPS = ["Input", "Job Details", "Qualifying Questions", "Manage Applications", "Billing"];
+const STEPS = ["Input", "Job Details", "Questions", "Applications", "Billing"];
 
 const ADVERT_MAX = 5500;
 
@@ -204,7 +204,7 @@ function PostJobPageInner() {
     return d.toISOString().split("T")[0];
   });
 
-  const DAY_RATE = 19;
+  const DAY_RATE = 25;
   const today = new Date();
   const end = new Date(endDate);
   const days = Math.max(3, Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
@@ -683,14 +683,14 @@ function PostJobPageInner() {
               <div>
                 <h2 className="text-base font-semibold font-heading text-[#0F172A]">How long do you want to advertise?</h2>
                 <p className="text-sm text-[#475569] mt-1">
-                  Day rate: <strong>£{DAY_RATE}/day</strong>. We recommend open-ended — you can close at any time.
+                  Day rate: <strong>£{DAY_RATE}/day</strong>. We recommend Flexi Plus — you can close at any time.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: true,  label: "Open-ended",     desc: "No end date — runs until you close it manually. Recommended.", icon: true },
-                  { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date." },
+                  { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date.", icon: false },
+                  { value: true,  label: "Flexi Plus",      desc: "No end date — runs until you close it manually. Recommended.", icon: true },
                 ].map(opt => (
                   <button
                     key={String(opt.value)}
@@ -831,7 +831,7 @@ function PostJobPageInner() {
               className="inline-flex items-center gap-2 bg-[#FF3366] hover:bg-[#E62958] text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors"
             >
               <CheckCircle2 size={16}/> Post Job & Pay £{upfront}
-              {openEnded && <span className="opacity-80 font-normal text-xs ml-0.5">(open-ended)</span>}
+              {openEnded && <span className="opacity-80 font-normal text-xs ml-0.5">(Flexi Plus)</span>}
             </button>
           )}
         </div>

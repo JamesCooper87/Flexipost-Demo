@@ -65,8 +65,8 @@ export default function CandidatesPage() {
 
   return (
     <div className="flex h-full">
-      {/* Main content — shrinks when drawer is open */}
-      <div className={`flex-1 min-w-0 transition-all duration-300 ${slideOut ? "mr-[60vw]" : ""}`}>
+      {/* Main content — stays full width; drawer overlays on top */}
+      <div className="flex-1 min-w-0">
         <div className="px-8 py-5 border-b border-[#E2E8F0] bg-white flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/jobs" className="p-1.5 rounded-lg text-[#475569] hover:bg-slate-100 transition-colors">
@@ -249,11 +249,19 @@ export default function CandidatesPage() {
         )}
       </div>
 
-      {/* Slide-out drawer */}
+      {/* Slide-out drawer — overlays on top of the page without moving the background */}
       {slideOut && (
-        <div className="fixed top-0 right-0 h-full w-[60vw] bg-white border-l border-[#E2E8F0] shadow-xl z-40 flex flex-col">
-          <Drawer slideOut={slideOut} job={job} onClose={() => setSlideOut(null)} />
-        </div>
+        <>
+          {/* Backdrop — click to close */}
+          <div
+            className="fixed inset-0 bg-black/20 z-30 transition-opacity"
+            onClick={() => setSlideOut(null)}
+          />
+          {/* Drawer panel */}
+          <div className="fixed top-0 right-0 h-full w-[60vw] bg-white border-l border-[#E2E8F0] shadow-2xl z-40 flex flex-col">
+            <Drawer slideOut={slideOut} job={job} onClose={() => setSlideOut(null)} />
+          </div>
+        </>
       )}
     </div>
   );
