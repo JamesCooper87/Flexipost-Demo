@@ -689,8 +689,8 @@ function PostJobPageInner() {
 
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date.", icon: false },
                   { value: true,  label: "Flexi Plus",      desc: "No end date — runs until you close it manually. Recommended.", icon: true },
+                  { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date.", icon: false },
                 ].map(opt => (
                   <button
                     key={String(opt.value)}
