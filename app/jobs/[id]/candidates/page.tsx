@@ -132,8 +132,8 @@ export default function CandidatesPage() {
                     <SortTh label="AI Score"  col="aiScore"   active={sortCol} dir={sortDir} onSort={handleSort} className="px-4 py-3"/>
                     <th className="px-4 py-3 text-xs font-semibold text-[#475569] uppercase tracking-wide text-left">CV</th>
                     <SortTh label="Status"    col="status"    active={sortCol} dir={sortDir} onSort={handleSort} className="px-4 py-3"/>
-                    <th className="px-4 py-3"/>
                     <th className="px-4 py-3 text-xs font-semibold text-[#475569] uppercase tracking-wide text-left">Source</th>
+                    <th className="px-4 py-3"/>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E2E8F0]">
@@ -214,15 +214,15 @@ export default function CandidatesPage() {
                           </select>
                         </td>
 
+                        <td className="px-4 py-4 text-[#475569]">
+                          {SOURCE_LABELS[c.source]}
+                        </td>
+
                         <td className="px-4 py-4">
                           <Link href={`/jobs/${id}/candidates/${c.id}`}
                             className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-[#94A3B8] hover:text-[#FF3366] hover:bg-[rgba(255,51,102,0.06)] transition-all inline-flex">
                             <ChevronRight size={16}/>
                           </Link>
-                        </td>
-
-                        <td className="px-4 py-4 text-[#475569]">
-                          {SOURCE_LABELS[c.source]}
                         </td>
                       </tr>
                     );
