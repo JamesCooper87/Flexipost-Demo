@@ -117,10 +117,10 @@ export default function JobsPage() {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-5 shrink-0">
+                  <div className="flex items-center gap-0 shrink-0">
 
                     {/* Applications — clickable, shows total + new */}
-                    <Link href={`/jobs/${job.id}/candidates`} className="text-center group">
+                    <Link href={`/jobs/${job.id}/candidates`} className="w-[120px] text-center group px-2">
                       <p className="text-[#94A3B8] text-xs mb-0.5">Applications</p>
                       <p className="font-semibold text-[#0F172A] group-hover:text-[#FF3366] transition-colors">
                         {job.applicationCount}
@@ -133,13 +133,13 @@ export default function JobsPage() {
                     </Link>
 
                     {/* Days live */}
-                    <div className="text-center">
+                    <div className="w-[80px] text-center px-2">
                       <p className="text-[#94A3B8] text-xs mb-0.5">Days live</p>
                       <p className="font-semibold text-[#0F172A]">{job.daysLive}</p>
                     </div>
 
                     {/* Close date + extend / repost */}
-                    <div className="text-center min-w-[110px]">
+                    <div className="w-[140px] text-center px-2">
                       {job.status === "live" && (
                         <>
                           <p className="text-[#94A3B8] text-xs mb-0.5">Closes</p>
@@ -188,22 +188,25 @@ export default function JobsPage() {
 
                     {/* Close (live) */}
                     {job.status === "live" && (
-                      confirmClose === job.id ? (
-                        <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5">
-                          <span className="text-xs text-red-700 font-medium">Close job?</span>
-                          <button onClick={() => handleClose(job.id)} className="text-xs font-semibold text-red-600 hover:text-red-800">Yes</button>
-                          <button onClick={() => setConfirmClose(null)} className="text-xs text-[#94A3B8] hover:text-[#475569]">No</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => setConfirmClose(job.id)}
-                          className="inline-flex items-center gap-1.5 bg-[rgba(239,68,68,0.06)] text-red-600 hover:bg-[rgba(239,68,68,0.12)] text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                          <Square size={13}/> Close
-                        </button>
-                      )
+                      <div className="w-[130px] flex justify-center">
+                        {confirmClose === job.id ? (
+                          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5">
+                            <span className="text-xs text-red-700 font-medium">Close job?</span>
+                            <button onClick={() => handleClose(job.id)} className="text-xs font-semibold text-red-600 hover:text-red-800">Yes</button>
+                            <button onClick={() => setConfirmClose(null)} className="text-xs text-[#94A3B8] hover:text-[#475569]">No</button>
+                          </div>
+                        ) : (
+                          <button onClick={() => setConfirmClose(job.id)}
+                            className="inline-flex items-center gap-1.5 bg-[rgba(239,68,68,0.06)] text-red-600 hover:bg-[rgba(239,68,68,0.12)] text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                            <Square size={13}/> Close
+                          </button>
+                        )}
+                      </div>
                     )}
 
                     {/* Repost (closed) — with dropdown */}
                     {job.status === "closed" && (
+                      <div className="w-[130px] flex justify-center">
                       <div className="relative">
                         <button
                           onClick={() => setRepostMenu(repostMenu === job.id ? null : job.id)}
@@ -229,6 +232,7 @@ export default function JobsPage() {
                             </button>
                           </div>
                         )}
+                      </div>
                       </div>
                     )}
                   </div>
