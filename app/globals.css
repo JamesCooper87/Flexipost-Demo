@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
+
+  --color-brand: #FF3366;
+  --color-brand-hover: #E62958;
+
+  --color-surface-page: #F6F7F8;
+  --color-surface-card: #FFFFFF;
+
+  --color-border-default: #E2E8F0;
+  --color-border-input: #C7CAD1;
+
+  --color-text-heading: #0F172A;
+  --color-text-body: #191C24;
+  --color-text-muted: #475569;
+  --color-text-soft: #64748B;
+  --color-text-disabled: #94A3B8;
+
+  --color-accent-violet: #8B5CF6;
+  --color-accent-indigo: #6366F1;
+  --color-accent-emerald: #10B981;
+  --color-accent-amber: #F59E0B;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F6F7F8;
+  color: #191C24;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Space Grotesk", sans-serif;
+  color: #0F172A;
+}
+
+.font-heading {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* Make all interactive elements show pointer cursor */
+button, a, [role="button"], select, label[for] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
