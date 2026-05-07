@@ -15,6 +15,41 @@ const STEPS = ["Input", "Job Details", "Qualifying Questions", "Collection", "Du
 
 const ADVERT_MAX = 5500;
 
+// Rough UK postcode prefix → town/city lookup for auto-fill
+const POSTCODE_TOWNS: Record<string, string> = {
+  AB:"Aberdeen",AL:"St Albans",B:"Birmingham",BA:"Bath",BB:"Blackburn",BD:"Bradford",
+  BH:"Bournemouth",BL:"Bolton",BN:"Brighton",BR:"Bromley",BS:"Bristol",CA:"Carlisle",
+  CB:"Cambridge",CF:"Cardiff",CH:"Chester",CM:"Chelmsford",CO:"Colchester",CR:"Croydon",
+  CT:"Canterbury",CV:"Coventry",CW:"Crewe",DA:"Dartford",DD:"Dundee",DE:"Derby",
+  DG:"Dumfries",DH:"Durham",DL:"Darlington",DN:"Doncaster",DT:"Dorchester",
+  DY:"Dudley",E:"East London",EC:"Central London",EH:"Edinburgh",EN:"Enfield",
+  EX:"Exeter",FK:"Falkirk",FY:"Blackpool",G:"Glasgow",GL:"Gloucester",GU:"Guildford",
+  GY:"Guernsey",HA:"Harrow",HD:"Huddersfield",HG:"Harrogate",HP:"Hemel Hempstead",
+  HR:"Hereford",HS:"Outer Hebrides",HU:"Hull",HX:"Halifax",IG:"Ilford",IP:"Ipswich",
+  IV:"Inverness",JE:"Jersey",KA:"Kilmarnock",KT:"Kingston upon Thames",KW:"Wick",
+  KY:"Kirkcaldy",L:"Liverpool",LA:"Lancaster",LD:"Llandrindod Wells",LE:"Leicester",
+  LL:"Llandudno",LN:"Lincoln",LS:"Leeds",LU:"Luton",M:"Manchester",ME:"Medway",
+  MK:"Milton Keynes",ML:"Motherwell",N:"North London",NE:"Newcastle",NG:"Nottingham",
+  NN:"Northampton",NP:"Newport",NR:"Norwich",NW:"North West London",OL:"Oldham",
+  OX:"Oxford",PA:"Paisley",PE:"Peterborough",PH:"Perth",PL:"Plymouth",PO:"Portsmouth",
+  PR:"Preston",RG:"Reading",RH:"Redhill",RM:"Romford",S:"Sheffield",SA:"Swansea",
+  SE:"South East London",SG:"Stevenage",SK:"Stockport",SL:"Slough",SM:"Sutton",
+  SN:"Swindon",SO:"Southampton",SP:"Salisbury",SR:"Sunderland",SS:"Southend-on-Sea",
+  ST:"Stoke-on-Trent",SW:"South West London",SY:"Shrewsbury",TA:"Taunton",TD:"Galashiels",
+  TF:"Telford",TN:"Tunbridge Wells",TQ:"Torquay",TR:"Truro",TS:"Teesside",TW:"Twickenham",
+  UB:"Uxbridge",W:"West London",WA:"Warrington",WC:"Central London",WD:"Watford",
+  WF:"Wakefield",WN:"Wigan",WR:"Worcester",WS:"Walsall",WV:"Wolverhampton",
+  YO:"York",ZE:"Lerwick",
+};
+
+function postcodeToTown(postcode: string): string {
+  const clean = postcode.trim().toUpperCase();
+  // Extract the outward code letters (e.g. "SW1A 1AA" → "SW", "M1" → "M")
+  const prefix = clean.match(/^([A-Z]{1,2})/)?.[1] ?? "";
+  // Try two-letter prefix first, then one-letter
+  return POSTCODE_TOWNS[prefix] ?? POSTCODE_TOWNS[prefix[0]] ?? "";
+}
+
 const DUMMY_AI_RESPONSE = {
   title: "Senior Product Designer",
   contractType: "permanent" as ContractType,
@@ -183,19 +218,18 @@ function PostJobPageInner() {
     setAiDone(false);
     setTimeout(() => {
       const r = DUMMY_AI_RESPONSE;
-      setTitle(r.title);
+      // Title stays as whatever the user typed — don't override it
       setContractType(r.contractType);
       setJobType(r.jobType);
       setLocationType(r.locationType);
-      setPostcode(r.postcode);
-      setLocation(r.location);
+      // Use jdInput as the advert copy draft (real AI would polish this)
+      setAdvertCopy(jdInput);
+      setEssential(r.essential);
+      setDesirable(r.desirable);
       setMinSalary(String(r.minSalary));
       setMaxSalary(String(r.maxSalary));
       setSalaryType(r.salaryType);
       setHasSalary(true);
-      setAdvertCopy(r.advertCopy);
-      setEssential(r.essential);
-      setDesirable(r.desirable);
       setAiLoading(false);
       setAiDone(true);
     }, 1800);
@@ -369,17 +403,22 @@ function PostJobPageInner() {
 
               <div className="grid grid-cols-2 gap-4">
                 <FieldInput
+                  label="Postcode"
+                  value={postcode}
+                  onChange={v => {
+                    setPostcode(v);
+                    const town = postcodeToTown(v);
+                    if (town) setLocation(town + ", UK");
+                  }}
+                  placeholder="e.g. EC1A 1BB"
+                  hint="Used for distance filtering"
+                />
+                <FieldInput
                   label="Location"
                   value={location}
                   onChange={setLocation}
                   placeholder="e.g. London, UK"
-                />
-                <FieldInput
-                  label="Postcode"
-                  value={postcode}
-                  onChange={setPostcode}
-                  placeholder="e.g. EC1A 1BB"
-                  hint="Used for distance filtering"
+                  hint="Shown on the advert"
                 />
               </div>
             </Card>
