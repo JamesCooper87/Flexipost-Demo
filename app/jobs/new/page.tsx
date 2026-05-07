@@ -233,7 +233,7 @@ function PostJobPageInner() {
     router.push("/jobs");
   }
 
-  const canContinue0 = aiDone;
+  const canContinue0 = title.trim().length > 0 && (aiDone || jdInput.trim().length > 0);
   const canContinue1 = title.trim().length > 0 && advertCopy.trim().length > 0 && !advertOver;
 
   return (
@@ -284,6 +284,15 @@ function PostJobPageInner() {
               <p className="text-sm text-[#475569] mt-1">
                 Our AI will extract details and draft your advert. The more you give it, the better the output.
               </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#0F172A] mb-1.5">Job title</label>
+              <input
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="e.g. Senior Software Engineer"
+                className="w-full border border-[#C7CAD1] rounded-xl px-4 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF3366] focus:border-transparent"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-[#0F172A] mb-1.5">Job description / existing advert</label>
