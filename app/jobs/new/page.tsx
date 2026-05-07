@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const STEPS = ["Input", "Job Details", "Qualifying Questions", "Collection", "Duration & Payment"];
+const STEPS = ["Input", "Job Details", "Qualifying Questions", "Manage Applications", "Billing"];
 
 const ADVERT_MAX = 5500;
 
@@ -196,8 +196,8 @@ function PostJobPageInner() {
   const [collectionMethod, setCollectionMethod] = useState<"collect_cvs" | "redirect_url">("collect_cvs");
   const [redirectUrl, setRedirectUrl] = useState("");
 
-  // Step 4 — Duration & Payment
-  const [openEnded, setOpenEnded] = useState(false);
+  // Step 4 — Billing
+  const [openEnded, setOpenEnded] = useState(true);
   const [endDate, setEndDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 14);
@@ -613,11 +613,11 @@ function PostJobPageInner() {
           </Card>
         )}
 
-        {/* ─── Step 3 — Collection ─────────────────────────────────────────── */}
+        {/* ─── Step 3 — Manage Applications ───────────────────────────────── */}
         {step === 3 && (
           <Card className="p-6 space-y-4">
             <div>
-              <h2 className="text-base font-semibold font-heading text-[#0F172A]">Application Collection</h2>
+              <h2 className="text-base font-semibold font-heading text-[#0F172A]">Manage Applications</h2>
               <p className="text-sm text-[#475569] mt-1">How would you like to receive applications?</p>
             </div>
             {[
@@ -660,89 +660,117 @@ function PostJobPageInner() {
           </Card>
         )}
 
-        {/* ─── Step 4 — Duration & Payment ─────────────────────────────────── */}
+        {/* ─── Step 4 — Billing ────────────────────────────────────────────── */}
         {step === 4 && (
-          <Card className="p-6 space-y-5">
-            <div>
-              <h2 className="text-base font-semibold font-heading text-[#0F172A]">Duration & Payment</h2>
-              <p className="text-sm text-[#475569] mt-1">
-                Day rate: <strong>£{DAY_RATE}/day</strong>. Choose a fixed end date or post open-ended and close manually.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date." },
-                { value: true,  label: "Open-ended",      desc: "No end date — runs until you close it manually.", icon: true },
-              ].map(opt => (
-                <button
-                  key={String(opt.value)}
-                  onClick={() => setOpenEnded(opt.value)}
-                  className={`text-left border rounded-xl p-4 transition-colors ${
-                    openEnded === opt.value
-                      ? "border-[#FF3366] bg-[rgba(255,51,102,0.04)]"
-                      : "border-[#E2E8F0] hover:border-[#C7CAD1]"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${
-                      openEnded === opt.value ? "border-[#FF3366]" : "border-[#C7CAD1]"
-                    }`}>
-                      {openEnded === opt.value && <div className="w-2.5 h-2.5 bg-[#FF3366] rounded-full"/>}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#0F172A] flex items-center gap-1.5">
-                        {opt.label}
-                        {opt.icon && <InfinityIcon size={14} className="text-[#8B5CF6]"/>}
-                      </p>
-                      <p className="text-xs text-[#475569] mt-0.5">{opt.desc}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {!openEnded && (
+          <div className="space-y-4">
+            {/* Duration choice */}
+            <Card className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-1.5">End date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={e => setEndDate(e.target.value)}
-                  min={new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0]}
-                  className="border border-[#C7CAD1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF3366]"
-                />
+                <h2 className="text-base font-semibold font-heading text-[#0F172A]">How long do you want to advertise?</h2>
+                <p className="text-sm text-[#475569] mt-1">
+                  Day rate: <strong>£{DAY_RATE}/day</strong>. We recommend open-ended — you can close at any time.
+                </p>
               </div>
-            )}
 
-            <div className="bg-[#F6F7F8] border border-[#E2E8F0] rounded-xl p-4 space-y-2 text-sm">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { value: true,  label: "Open-ended",     desc: "No end date — runs until you close it manually. Recommended.", icon: true },
+                  { value: false, label: "Fixed end date",  desc: "Job closes automatically on your chosen date." },
+                ].map(opt => (
+                  <button
+                    key={String(opt.value)}
+                    onClick={() => setOpenEnded(opt.value)}
+                    className={`text-left border rounded-xl p-4 transition-colors ${
+                      openEnded === opt.value
+                        ? "border-[#FF3366] bg-[rgba(255,51,102,0.04)]"
+                        : "border-[#E2E8F0] hover:border-[#C7CAD1]"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${
+                        openEnded === opt.value ? "border-[#FF3366]" : "border-[#C7CAD1]"
+                      }`}>
+                        {openEnded === opt.value && <div className="w-2.5 h-2.5 bg-[#FF3366] rounded-full"/>}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-[#0F172A] flex items-center gap-1.5">
+                          {opt.label}
+                          {opt.icon && <InfinityIcon size={14} className="text-[#8B5CF6]"/>}
+                        </p>
+                        <p className="text-xs text-[#475569] mt-0.5">{opt.desc}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
               {!openEnded && (
+                <div>
+                  <label className="block text-sm font-medium text-[#0F172A] mb-1.5">End date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={e => setEndDate(e.target.value)}
+                    min={new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0]}
+                    className="border border-[#C7CAD1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF3366]"
+                  />
+                </div>
+              )}
+            </Card>
+
+            {/* Payment summary */}
+            <Card className="p-6 space-y-4">
+              <h3 className="text-sm font-semibold text-[#0F172A]">Payment summary</h3>
+
+              <div className="bg-[#F6F7F8] border border-[#E2E8F0] rounded-xl p-4 space-y-2 text-sm">
+                {!openEnded && (
+                  <div className="flex justify-between">
+                    <span className="text-[#475569]">Duration</span>
+                    <span className="font-semibold text-[#0F172A]">{days} days</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span className="text-[#475569]">Duration</span>
-                  <span className="font-semibold text-[#0F172A]">{days} days</span>
+                  <span className="text-[#475569]">Day rate</span>
+                  <span className="font-semibold text-[#0F172A]">£{DAY_RATE}/day</span>
                 </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-[#475569]">Day rate</span>
-                <span className="font-semibold text-[#0F172A]">£{DAY_RATE}/day</span>
-              </div>
-              <div className="border-t border-[#E2E8F0] pt-2 flex justify-between">
-                <span className="text-[#475569]">Charged today (first 3 days)</span>
-                <span className="font-semibold text-[#0F172A]">£{upfront}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#475569]">Charged on close</span>
-                <span className="font-semibold text-[#0F172A]">
-                  {openEnded ? "Days used beyond 3 × £19" : `£${(DAY_RATE * days) - upfront}`}
-                </span>
-              </div>
-              {!openEnded && (
-                <div className="border-t border-[#E2E8F0] pt-2 flex justify-between font-semibold text-[#0F172A]">
-                  <span>Estimated total</span>
-                  <span>£{DAY_RATE * days}</span>
+                <div className="border-t border-[#E2E8F0] pt-2 flex justify-between">
+                  <span className="text-[#475569]">Charged today (first 3 days)</span>
+                  <span className="font-bold text-[#0F172A] text-base">£{upfront}</span>
                 </div>
-              )}
-            </div>
+                {!openEnded && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-[#475569]">Charged on close</span>
+                      <span className="font-semibold text-[#0F172A]">£{(DAY_RATE * days) - upfront}</span>
+                    </div>
+                    <div className="border-t border-[#E2E8F0] pt-2 flex justify-between font-semibold text-[#0F172A]">
+                      <span>Estimated total</span>
+                      <span>£{DAY_RATE * days}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* After 3 days note */}
+              <div className="flex items-start gap-2.5 text-sm text-[#475569]">
+                <InfinityIcon size={15} className="text-[#8B5CF6] shrink-0 mt-0.5"/>
+                <p>After the first 3 days you can close at any time and will only be billed for what you&apos;ve used.</p>
+              </div>
+
+              {/* Saved card */}
+              <div className="flex items-center justify-between border border-[#E2E8F0] rounded-xl px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-6 bg-[#1A1F71] rounded flex items-center justify-center shrink-0">
+                    <span className="text-white text-[8px] font-bold tracking-tight">VISA</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#0F172A]">Visa ending 4242</p>
+                    <p className="text-xs text-[#94A3B8]">Expires 09/28</p>
+                  </div>
+                </div>
+                <span className="text-xs text-[#10B981] font-semibold bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-0.5">Saved</span>
+              </div>
+            </Card>
 
             {/* Important notice */}
             <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
@@ -752,12 +780,7 @@ function PostJobPageInner() {
                 <p className="text-amber-700">You can stop the job at any point and repost with edits, but you will be charged for the first 3 days (£{upfront}) on each posting.</p>
               </div>
             </div>
-
-            <div className="flex items-start gap-3 bg-[rgba(255,51,102,0.04)] border border-[rgba(255,51,102,0.2)] rounded-xl p-4">
-              <span className="text-base shrink-0">💳</span>
-              <p className="text-xs text-[#475569]">Card details would be entered here in production. £{upfront} is charged today. The balance is charged when the job closes.</p>
-            </div>
-          </Card>
+          </div>
         )}
 
         {/* Navigation */}
