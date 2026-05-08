@@ -57,11 +57,6 @@ export default function CandidateDetailPage() {
                   <span className="flex items-center gap-1"><Mail size={13}/> {candidate.email}</span>
                   <span className="flex items-center gap-1"><Phone size={13}/> {candidate.phone}</span>
                 </div>
-                <div className="flex items-center gap-2 mt-2 text-xs text-[#94A3B8]">
-                  <span>Notice: <strong className="text-[#475569]">{candidate.cv.noticePeriod}</strong></span>
-                  <span>·</span>
-                  <span>Right to work: <strong className={candidate.cv.rightToWork ? "text-emerald-700" : "text-rose-700"}>{candidate.cv.rightToWork ? "Yes" : "Requires sponsorship"}</strong></span>
-                </div>
               </div>
               <div className="shrink-0 text-center">
                 <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center">
@@ -137,8 +132,36 @@ export default function CandidateDetailPage() {
           </Card>
         </div>
 
-        {/* Right panel — score + qualifying */}
+        {/* Right panel — qualifying + score */}
         <div className="col-span-2 space-y-5">
+
+          {/* Qualifying questions — compact, top of fold */}
+          {job.qualifyingQuestions.length > 0 && (
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-2.5">
+                <p className="text-xs font-semibold text-[#475569] uppercase tracking-wide">Qualifying Questions</p>
+                {candidate.qualified
+                  ? <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5"><CheckCircle size={10}/> Qualified</span>
+                  : <span className="flex items-center gap-1 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-2 py-0.5"><XCircle size={10}/> Not Qualified</span>
+                }
+              </div>
+              <div className="space-y-2">
+                {job.qualifyingQuestions.map(q => {
+                  const answer = candidate.qualifyingAnswers.find(a => a.questionId === q.id);
+                  const isQualifying = answer?.answer === q.qualifyingAnswer;
+                  return (
+                    <div key={q.id} className="flex items-center justify-between gap-3 py-1.5 border-t border-[#E2E8F0] first:border-t-0 first:pt-0">
+                      <p className="text-xs text-[#475569] leading-snug flex-1">{q.question}</p>
+                      <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded-md shrink-0 ${
+                        isQualifying ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+                      }`}>{answer?.answer ?? "—"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          )}
+
           {/* AI Score */}
           <Card className="p-5">
             <p className="text-sm font-semibold text-[#0F172A] mb-3">AI Score</p>
@@ -181,38 +204,6 @@ export default function CandidateDetailPage() {
             </div>
           </Card>
 
-          {/* Qualifying questions */}
-          {job.qualifyingQuestions.length > 0 && (
-            <Card className="p-5">
-              <p className="text-sm font-semibold text-[#0F172A] mb-3">Qualifying Questions</p>
-              <div className="flex items-center gap-2 mb-3">
-                {candidate.qualified
-                  ? <><CheckCircle size={15} className="text-emerald-600"/><span className="text-sm font-medium text-emerald-600">Qualified</span></>
-                  : <><XCircle size={15} className="text-rose-600"/><span className="text-sm font-medium text-rose-600">Not Qualified</span></>
-                }
-              </div>
-              <div className="space-y-3">
-                {job.qualifyingQuestions.map(q => {
-                  const answer = candidate.qualifyingAnswers.find(a => a.questionId === q.id);
-                  const isQualifying = answer?.answer === q.qualifyingAnswer;
-                  return (
-                    <div key={q.id} className="border border-[#E2E8F0] rounded-xl p-3">
-                      <p className="text-xs font-medium text-[#0F172A] mb-2">{q.question}</p>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
-                          answer?.answer === "yes" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
-                        }`}>{answer?.answer}</span>
-                        {isQualifying
-                          ? <span className="text-xs text-emerald-600 flex items-center gap-1"><CheckCircle size={11}/> Qualifying</span>
-                          : <span className="text-xs text-rose-600 flex items-center gap-1"><XCircle size={11}/> Not qualifying</span>
-                        }
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-          )}
         </div>
       </div>
     </div>
