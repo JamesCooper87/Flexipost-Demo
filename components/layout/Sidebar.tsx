@@ -22,19 +22,21 @@ export function Sidebar() {
 
   return (
     <aside className="w-56 shrink-0 bg-white border-r border-[#E2E8F0] flex flex-col h-screen sticky top-0">
-      {/* Logo */}
-      <div className="px-5 py-5 border-b border-[#E2E8F0]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#0F172A] flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold font-heading">FP</span>
+      {/* Account branding */}
+      <div className="px-4 py-4 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-3">
+          {/* Account logo — placeholder initials */}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shrink-0 shadow-sm">
+            <span className="text-white text-sm font-bold font-heading">AC</span>
           </div>
-          <span className="text-[#0F172A] font-heading font-semibold text-[15px] leading-none">
-            Flexipost<span className="text-[#FF3366]">.ai</span>
-          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-[#0F172A] font-heading leading-tight truncate">Acme Recruitment</p>
+            <p className="text-[10px] text-[#94A3B8] mt-0.5 leading-none">
+              powered by{" "}
+              <span className="text-[#FF3366] font-semibold">flexipost.ai</span>
+            </p>
+          </div>
         </div>
-        <p className="text-[10px] font-medium text-[#94A3B8] uppercase tracking-widest mt-2 pl-[42px]">
-          Recruiter
-        </p>
       </div>
 
       {/* Nav */}

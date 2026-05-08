@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { tierConfig, statusConfig, formatDate } from "@/lib/utils";
 import {
-  ChevronLeft, Filter, CheckCircle, XCircle, ChevronRight, Edit3,
+  ChevronLeft, Filter, CheckCircle, XCircle, ChevronRight, Sparkles,
   ChevronUp, ChevronDown, MapPin, Mail, Phone, X, FileText,
   Briefcase, GraduationCap, Wrench, Plus, Trash2,
 } from "lucide-react";
@@ -110,7 +110,7 @@ export default function CandidatesPage() {
           </div>
           <button onClick={() => setCriteriaOpen(true)}
             className="inline-flex items-center gap-2 text-sm font-medium text-[#8B5CF6] border border-[#8B5CF6] hover:bg-[rgba(139,92,246,0.06)] px-3 py-2 rounded-xl transition-colors">
-            <Edit3 size={14}/> Edit Criteria
+            <Sparkles size={14}/> Edit AI Score Criteria
           </button>
         </div>
 
