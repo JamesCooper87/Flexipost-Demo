@@ -23,9 +23,39 @@ export default function CandidatesPage() {
   const job = jobs.find(j => j.id === id);
   const jobCandidates = candidates.filter(c => c.jobId === id);
 
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [qualFilter, setQualFilter] = useState<string>("all");
+  // Filter state — rejected hidden by default
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [statusFilters, setStatusFilters] = useState<Set<string>>(
+    new Set(["new", "reviewing", "shortlisted"])
+  );
+  const [qualFilter, setQualFilter] = useState<"all" | "qualified" | "not_qualified">("all");
+  const [minScore, setMinScore] = useState(0);
+  const [maxScore, setMaxScore] = useState(100);
   const [criteriaOpen, setCriteriaOpen] = useState(false);
+
+  function toggleStatus(s: string) {
+    setStatusFilters(prev => {
+      const next = new Set(prev);
+      if (next.has(s)) next.delete(s); else next.add(s);
+      return next;
+    });
+  }
+
+  const DEFAULT_STATUSES = ["new", "reviewing", "shortlisted"];
+  const statusChanged =
+    statusFilters.size !== DEFAULT_STATUSES.length ||
+    DEFAULT_STATUSES.some(s => !statusFilters.has(s));
+  const activeFilterCount =
+    (qualFilter !== "all" ? 1 : 0) +
+    (statusChanged ? 1 : 0) +
+    (minScore > 0 || maxScore < 100 ? 1 : 0);
+
+  function resetFilters() {
+    setStatusFilters(new Set(["new", "reviewing", "shortlisted"]));
+    setQualFilter("all");
+    setMinScore(0);
+    setMaxScore(100);
+  }
   const [sortCol, setSortCol] = useState<"name" | "appliedAt" | "aiScore" | "status" | "qualified">("aiScore");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [slideOut, setSlideOut] = useState<SlideOut>(null);
@@ -46,8 +76,9 @@ export default function CandidatesPage() {
   if (!job) return <div className="p-8 text-[#475569]">Job not found.</div>;
 
   const filtered = jobCandidates
-    .filter(c => statusFilter === "all" || c.status === statusFilter)
+    .filter(c => statusFilters.has(c.status))
     .filter(c => qualFilter === "all" || (qualFilter === "qualified" ? c.qualified : !c.qualified))
+    .filter(c => c.aiScore >= minScore && c.aiScore <= maxScore)
     .sort((a, b) => {
       let cmp = 0;
       switch (sortCol) {
@@ -88,11 +119,10 @@ export default function CandidatesPage() {
           {Object.entries(statusCounts).map(([s, count]) => {
             const cfg = statusConfig[s];
             return (
-              <button key={s} onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
-                className={`p-4 rounded-xl border text-left transition-colors ${statusFilter === s ? "border-[#FF3366] bg-[rgba(255,51,102,0.04)]" : "bg-white border-[#E2E8F0] hover:shadow-sm"}`}>
+              <div key={s} className="p-4 rounded-xl border border-[#E2E8F0] bg-white text-left">
                 <p className="text-2xl font-bold font-heading text-[#0F172A]">{count}</p>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${cfg.color}`}>{cfg.label}</span>
-              </button>
+              </div>
             );
           })}
         </div>
@@ -100,23 +130,124 @@ export default function CandidatesPage() {
         <div className="px-8 py-6">
           {/* Filters */}
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex items-center gap-2 text-sm text-[#475569]">
-              <Filter size={14}/>
-              <span className="font-medium">Filter:</span>
+            <div className="relative">
+              <button
+                onClick={() => setFilterOpen(o => !o)}
+                className={`inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg border transition-colors ${
+                  filterOpen || activeFilterCount > 0
+                    ? "border-[#FF3366] text-[#FF3366] bg-[rgba(255,51,102,0.04)]"
+                    : "border-[#E2E8F0] text-[#475569] hover:bg-slate-50"
+                }`}
+              >
+                <Filter size={14}/>
+                Filter
+                {activeFilterCount > 0 && (
+                  <span className="bg-[#FF3366] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+
+              {filterOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)}/>
+                  <div className="absolute left-0 top-10 w-72 bg-white border border-[#E2E8F0] rounded-xl shadow-xl z-20 p-4 space-y-4">
+
+                    {/* Qualifying Status */}
+                    <div>
+                      <p className="text-xs font-semibold text-[#475569] uppercase tracking-wide mb-2">Qualifying Status</p>
+                      <div className="flex gap-2">
+                        {(["all", "qualified", "not_qualified"] as const).map(f => (
+                          <button key={f} onClick={() => setQualFilter(f)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                              qualFilter === f ? "bg-[#FF3366] text-white" : "bg-slate-50 text-[#475569] hover:bg-slate-100"
+                            }`}>
+                            {f === "all" ? "All" : f === "qualified" ? "Qualified" : "Not Qualified"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Application Status */}
+                    <div>
+                      <p className="text-xs font-semibold text-[#475569] uppercase tracking-wide mb-2">Application Status</p>
+                      <div className="space-y-2">
+                        {(["new", "reviewing", "shortlisted", "rejected"] as const).map(s => {
+                          const cfg = statusConfig[s];
+                          return (
+                            <label key={s} className="flex items-center gap-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={statusFilters.has(s)}
+                                onChange={() => toggleStatus(s)}
+                                className="w-3.5 h-3.5 rounded accent-[#FF3366]"
+                              />
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${cfg.color}`}>{cfg.label}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* AI Score Range */}
+                    <div>
+                      <p className="text-xs font-semibold text-[#475569] uppercase tracking-wide mb-2">AI Score</p>
+                      <div className="flex items-end gap-2">
+                        <div className="flex-1">
+                          <p className="text-xs text-[#94A3B8] mb-1">Min</p>
+                          <input
+                            type="number" min={0} max={100}
+                            value={minScore}
+                            onChange={e => setMinScore(Math.min(Number(e.target.value), maxScore))}
+                            className="w-full border border-[#C7CAD1] rounded-lg px-2.5 py-1.5 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF3366]"
+                          />
+                        </div>
+                        <span className="text-[#94A3B8] pb-2">–</span>
+                        <div className="flex-1">
+                          <p className="text-xs text-[#94A3B8] mb-1">Max</p>
+                          <input
+                            type="number" min={0} max={100}
+                            value={maxScore}
+                            onChange={e => setMaxScore(Math.max(Number(e.target.value), minScore))}
+                            className="w-full border border-[#C7CAD1] rounded-lg px-2.5 py-1.5 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF3366]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reset */}
+                    {activeFilterCount > 0 && (
+                      <button
+                        onClick={resetFilters}
+                        className="w-full text-xs font-medium text-[#94A3B8] hover:text-[#475569] border border-[#E2E8F0] rounded-lg py-2 transition-colors"
+                      >
+                        Reset to defaults
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-            {(["all","qualified","not_qualified"] as const).map(f => (
-              <button key={f} onClick={() => setQualFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  qualFilter === f ? "bg-[#FF3366] text-white" : "bg-white border border-[#E2E8F0] text-[#475569] hover:bg-slate-50"
-                }`}>
-                {f === "all" ? "All" : f === "qualified" ? "Qualified" : "Not Qualified"}
-              </button>
-            ))}
-            {statusFilter !== "all" && (
-              <button onClick={() => setStatusFilter("all")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-[#475569] hover:bg-slate-200 transition-colors">
-                Clear status filter ×
-              </button>
+
+            {/* Active filter summary chips */}
+            {activeFilterCount > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                {statusFilters.has("rejected") && (
+                  <span className="text-xs bg-slate-100 text-[#475569] rounded-full px-2.5 py-1 font-medium">
+                    Showing rejected
+                  </span>
+                )}
+                {qualFilter !== "all" && (
+                  <span className="text-xs bg-[rgba(255,51,102,0.08)] text-[#FF3366] rounded-full px-2.5 py-1 font-medium capitalize">
+                    {qualFilter === "qualified" ? "Qualified only" : "Not qualified only"}
+                  </span>
+                )}
+                {(minScore > 0 || maxScore < 100) && (
+                  <span className="text-xs bg-[rgba(99,102,241,0.08)] text-[#6366F1] rounded-full px-2.5 py-1 font-medium">
+                    Score {minScore}–{maxScore}
+                  </span>
+                )}
+              </div>
             )}
           </div>
 
